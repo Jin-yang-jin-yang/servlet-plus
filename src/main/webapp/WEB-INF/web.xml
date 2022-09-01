@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0">
+    <display-name>Patrick's Server</display-name>
+    <servlet>
+        <servlet-name>ServletPlus</servlet-name>
+        <servlet-class>patrick.servlet.plus.auto.servlet.PlusServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
+        <init-param>
+            <param-name>prefix</param-name>
+            <param-value>/school</param-value>
+        </init-param>
+        <init-param>
+            <param-name>suffix</param-name>
+            <param-value>.plus</param-value>
+        </init-param>
+        <init-param>
+            <param-name>plusPackage</param-name>
+            <param-value>com.example.schoolweb</param-value>
+        </init-param>
+        <description>代理所有plus请求</description>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ServletPlus</servlet-name>
+        <url-pattern>*.plus</url-pattern>
+    </servlet-mapping>
+</web-app>

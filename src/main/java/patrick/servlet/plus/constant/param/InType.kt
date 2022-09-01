@@ -1,0 +1,13 @@
+package patrick.servlet.plus.auto.servlet.patrick.servlet.plus.constant.param
+
+enum class InType {
+    SERVLET_CONTEXT, SESSION, REQUEST, RESPONSE, OUT, COOKIE, COOKIE_LIST,
+
+    SERVLET_CONTEXT_DATA, SESSION_DATA, REQUEST_DATA, COOKIE_DATA,
+
+    OBJECT_FROM_FORM_DATA, OBJECT_FROM_BODY, BASIC_FORM_DATA, HEAD, PATH, MAP, FILE,
+
+    LIST_FILE,
+
+    BEFORE_NODE_DATA
+}
