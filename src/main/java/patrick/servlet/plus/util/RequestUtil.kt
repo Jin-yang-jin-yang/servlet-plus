@@ -1,13 +1,13 @@
 package patrick.servlet.plus.util
 
 import jakarta.servlet.http.HttpServletRequest
-import patrick.servlet.plus.auto.servlet.patrick.servlet.plus.exception.api.CastException
+import patrick.servlet.plus.exception.api.CastException
 import java.lang.reflect.ParameterizedType
 
 fun HttpServletRequest.getBody(): String {
     val body = StringBuffer()
     val reader = this.reader
-    var str: String? = null
+    var str: String?
 
     str = reader.readLine()
     while (null != str) {

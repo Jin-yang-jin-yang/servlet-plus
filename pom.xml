@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
-    <artifactId>school-web</artifactId>
+    <artifactId>servlet-plus</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>school-web</name>
+    <name>servlet-plus</name>
     <packaging>war</packaging>
 
     <properties>

@@ -1,16 +1,19 @@
 package patrick.servlet.plus.auto.node.filter.struct
 
 import patrick.servlet.plus.auto.node.param.NodeParam
-import patrick.servlet.plus.auto.servlet.patrick.servlet.plus.constant.http.HttpMethod
+import patrick.servlet.plus.constant.http.HttpMethod
 
+/**
+ * Filter节点
+ */
 data class FilterNode(
-    val pathRegex: Regex,
-    val nodeParamList: List<NodeParam>,
-    val httpMethods: Array<HttpMethod> = arrayOf(HttpMethod.ALL),
-    val filter: java.lang.reflect.Method,
-    val filterHolder: Any,
-    val order: Int,
-    val returnType: Class<out FilterReturn>
+    val pathRegex: Regex,//Filter过滤的路径正则表达式, 请求路径与之全匹配时Filter生效
+    val nodeParamList: List<NodeParam>,////节点方法参数列表
+    val httpMethods: Array<HttpMethod> = arrayOf(HttpMethod.ALL),//接受的HTTP请求方法
+    val filter: java.lang.reflect.Method,//Filter方法
+    val filterHolder: Any,//Filter方法所在类的实例
+    val order: Int,//执行顺序, 绝对值越小约先执行. 正数表示前置过滤器, 负数表示后置过滤器, 0为最优先先前置过滤器
+    val returnType: Class<out FilterReturn> //Filter返回类型
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

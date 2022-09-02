@@ -1,5 +1,8 @@
 package patrick.servlet.plus.util
 
+/**
+ * Map<String,Array<String>>扩展方法, 将Map<String,Array<String>>转为JSON
+ */
 fun Map<String,Array<String>>.toJson(): String {
     val result = StringBuffer("{")
     this.forEach{

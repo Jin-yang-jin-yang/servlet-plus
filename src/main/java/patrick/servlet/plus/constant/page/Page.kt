@@ -1,5 +1,8 @@
-package patrick.servlet.plus.auto.servlet.patrick.servlet.plus.constant
+package patrick.servlet.plus.constant.page
 
+/**
+ * 错误页面
+ */
 fun getPage500(msg: String) =
     """
         <!doctype html>

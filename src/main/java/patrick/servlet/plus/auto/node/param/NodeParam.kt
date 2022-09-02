@@ -1,5 +1,13 @@
 package patrick.servlet.plus.auto.node.param
 
-import patrick.servlet.plus.auto.servlet.patrick.servlet.plus.constant.param.InType
+import patrick.servlet.plus.constant.param.InType
 
-data class NodeParam(val inType: InType, val name: String, val Type: Class<*>, var apiPath: String)
+/**
+ * 节点方法参数
+ */
+data class NodeParam(
+    val inType: InType, //参数InType
+    val name: String, //参数名称
+    val Type: Class<*>, //参数类型
+    var apiPath: String //参数所在节点的请求路径
+)

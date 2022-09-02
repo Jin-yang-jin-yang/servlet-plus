@@ -1,6 +1,6 @@
-package patrick.servlet.plus.annotation.life.request
+package patrick.servlet.plus.annotation.filter
 
-import patrick.servlet.plus.auto.servlet.patrick.servlet.plus.constant.http.HttpMethod
+import patrick.servlet.plus.constant.http.HttpMethod
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target( AnnotationTarget.FUNCTION)

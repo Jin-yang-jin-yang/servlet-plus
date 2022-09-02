@@ -6,12 +6,12 @@
 
 ### 类注解
 
-    @Plus: 标记此类为被分发类
+    @Plus: 标记此类为被分发类, 只有此注解存在时, 工具包才会扫描其中的方法
     @Api(value= path): 注明此类中所有API的路径前缀
 
 ### Api注解
 
-    @Api(value= path, httpMethod = {此API接受的HTTP方法})
+    @Api(value= path, httpMethod = {此API接受的HTTP方法}): 标记接口HTTP方法及注明路径
     @DeleteApi(value = path): 标记接口HTTP方法为DELETE, 及注明路径
     @GetApi(value = path): 标记接口HTTP方法为GET, 及注明路径
     @HeadApi(value = path): 标记接口HTTP方法为HEAD, 及注明路径
@@ -25,16 +25,15 @@
 ### 过滤器注解
 
     @Filter(
-    value = 要匹配的正则表达式, 默认为"[\\s\\S]*"
-    order = 执行顺序, 绝对值越小约先执行. 正数表示前置过滤器, 负数表示后置过滤器, 0为最优先先前置过滤器.
-    httpMethods = 要过滤的HTTP方法, 默认为{HttpMethod.ALL},
-
-)
+        value = 要匹配的正则表达式, 默认为"[\\s\\S]*"
+        order = 执行顺序, 绝对值越小约先执行. 正数表示前置过滤器, 负数表示后置过滤器, 0为最优先先前置过滤器
+        httpMethods = 要过滤的HTTP方法, 默认为{HttpMethod.ALL}
+    )
 
 ### 方法参数注解
 
     @CookieList: 表明此参数类型为List<Cookie>, jdk1.8及以上value可缺省, 工具包将会直接检查方法参数泛型类型
-    @FromBeforeNode: 表明此参数来自上一个过滤器, 类型为Object
+    @FromBeforeNode: 表明此参数来自上一个过滤器, 类型为Object, 或者对应类型
     @FromBody(value = name): 表明此参数来自请求体的JSON, 工具包会自动封装为对象, jdk1.8及以上value可缺省, 工具包将会直接检查方法参数名称
     @FromContext(value = name): 表明此参数来自servletContext, 类型为基本数据类型及其包装类或String, jdk1.8及以上value可缺省, 工具包将会直接检查方法参数名称
     @FromCookie(value = name): 表明此参数来自Cookie, 类型为基本数据类型及其包装类或String, jdk1.8及以上value可缺省, 工具包将会直接检查方法参数名称
@@ -47,13 +46,18 @@
     
     此外,若参数为Map<String, String[]>类型,则会装配为form-data的Map
 
-## Api方法
+### 生命周期注解
+    @Destroy: 表明方法在服务器关闭时执行
+    @Init: 表明方法在开始服务前执行
 
+## Api方法
     Api方法应该为public
 
-## 过滤器
-
+## 过滤器方法
     过滤器方法应该为public
+
+## 生命周期方法
+    生命周期方法应该为public, 无参数, 无返回值
 
 ## 配置如下
 
@@ -84,7 +88,7 @@
 
     <servlet-mapping>
         <servlet-name>ServletPlus</servlet-name>
-        <url-pattern>与suffix匹配(比如suffix为".do", 这里就填*.do)</url-pattern>
+        <url-pattern>与suffix匹配(比如suffix为".do",这里就填*.do)</url-pattern>
     </servlet-mapping>
 </web-app>
 ```
