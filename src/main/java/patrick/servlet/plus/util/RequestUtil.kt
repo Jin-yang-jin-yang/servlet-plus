@@ -1,6 +1,6 @@
 package patrick.servlet.plus.util
 
-import jakarta.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletRequest
 import patrick.servlet.plus.exception.api.CastException
 import java.lang.reflect.ParameterizedType
 
@@ -113,14 +113,14 @@ fun stringArrayToBasicData(data: Array<String?>, type: Class<*>): Any? {
 
     } else {
         return when (type) {
-            java.lang.Integer::class.java, java.lang.Integer.TYPE -> java.lang.Integer.parseInt(data[0])
-            java.lang.Byte::class.java, java.lang.Byte.TYPE -> java.lang.Byte.parseByte(data[0])
-            java.lang.Short::class.java, java.lang.Short.TYPE -> java.lang.Short.parseShort(data[0])
-            java.lang.Long::class.java, java.lang.Long.TYPE -> java.lang.Long.parseLong(data[0])
+            java.lang.Integer::class.java, java.lang.Integer.TYPE -> data[0]?.toInt()
+            java.lang.Byte::class.java, java.lang.Byte.TYPE -> data[0]?.toByte()
+            java.lang.Short::class.java, java.lang.Short.TYPE -> data[0]?.toShort()
+            java.lang.Long::class.java, java.lang.Long.TYPE -> data[0]?.toLong()
             java.lang.Character::class.java, java.lang.Character.TYPE -> data[0]?.toCharArray()?.get(0)
-            java.lang.Double::class.java, java.lang.Double.TYPE -> java.lang.Double.parseDouble(data[0])
-            java.lang.Float::class.java, java.lang.Float.TYPE -> java.lang.Float.parseFloat(data[0])
-            java.lang.Boolean::class.java, java.lang.Boolean.TYPE -> java.lang.Boolean.parseBoolean(data[0])
+            java.lang.Double::class.java, java.lang.Double.TYPE -> data[0]?.toDouble()
+            java.lang.Float::class.java, java.lang.Float.TYPE -> data[0]?.toFloat()
+            java.lang.Boolean::class.java, java.lang.Boolean.TYPE -> data[0]?.toBoolean()
             String::class.java -> data[0]
             else -> throw CastException.castToBasicDataFailed(data, type)
         }

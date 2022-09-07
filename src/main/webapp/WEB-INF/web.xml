@@ -9,16 +9,28 @@
         <servlet-class>patrick.servlet.plus.auto.servlet.PlusServlet</servlet-class>
         <load-on-startup>0</load-on-startup>
         <init-param>
-            <param-name>prefix</param-name>
-            <param-value>/school</param-value>
-        </init-param>
-        <init-param>
             <param-name>suffix</param-name>
             <param-value>.plus</param-value>
         </init-param>
         <init-param>
+            <param-name>prefix</param-name>
+            <param-value/>
+        </init-param>
+        <init-param>
             <param-name>plusPackage</param-name>
-            <param-value>com.example.schoolweb</param-value>
+            <param-value>test</param-value>
+        </init-param>
+        <init-param>
+            <param-name>fileCacheSize</param-name>
+            <param-value>3145728</param-value>
+        </init-param>
+        <init-param>
+            <param-name>maxFileSizeConfig</param-name>
+            <param-value>41943040</param-value>
+        </init-param>
+        <init-param>
+            <param-name>maxFileRequestSizeConfig</param-name>
+            <param-value>41943040</param-value>
         </init-param>
         <description>代理所有plus请求</description>
     </servlet>

@@ -20,7 +20,7 @@
     @PostApi(value = path): 标记接口HTTP方法为POST, 及注明路径
     @PutApi(value = path): 标记接口HTTP方法为PUT, 及注明路径
     @TraceApi(value = path): 标记接口HTTP方法为TRACE, 及注明路径
-    @ForwardOrDirect: 标记为接口返回的路径转发或重定向(需要重定向的路径前加"direct:", 需要请求转发的路径前加"forward:"或省略)
+    @ForwardOrDirect: 标记为接口返回的路径转发或重定向(需要重定向的路径前加"direct:", 需要请求转发的路径前加"forward:"或省略), 标记在类上时代表此类中所有接口为转发或重定向
 
 ### 过滤器注解
 

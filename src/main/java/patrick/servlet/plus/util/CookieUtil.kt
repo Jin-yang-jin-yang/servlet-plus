@@ -1,6 +1,6 @@
 package patrick.servlet.plus.util
 
-import jakarta.servlet.http.Cookie
+import javax.servlet.http.Cookie
 
 /**
  * Array<Cookie>扩展方法, 根据名称获取cookie值

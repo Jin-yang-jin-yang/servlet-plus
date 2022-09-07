@@ -1,8 +1,9 @@
 package patrick.servlet.plus.util
 
 import cn.hutool.json.JSONUtil
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
+import org.apache.commons.fileupload.FileItem
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 import patrick.servlet.plus.auto.config.ServletConfig.prefix
 import patrick.servlet.plus.auto.config.ServletConfig.suffix
 import patrick.servlet.plus.auto.node.api.struct.ApiNode
@@ -44,9 +45,11 @@ private fun getParam(
         pathDataMap = getPathData(path, req!!.requestURI.replace(prefix, "").replaceLast(suffix, ""))
     }
 
+    var fileItemList: List<FileItem>? = null //懒加载文件列表
     nodeParamList.forEach {
+
         when (it.inType) {
-            InType.SERVLET_CONTEXT -> result.add(req?.servletContext)
+            InType.SERVLET_CONTEXT -> result.add(req?.session?.servletContext)
             InType.SESSION -> result.add(req?.session)
             InType.REQUEST -> result.add(req)
             InType.RESPONSE -> result.add(resp)
@@ -54,16 +57,15 @@ private fun getParam(
             InType.COOKIE -> req?.cookies?.getAttribute(it.name)
             InType.COOKIE_LIST -> result.add(req?.cookies?.toList())
 
-            InType.SERVLET_CONTEXT_DATA -> result.add(req?.servletContext?.getAttribute(it.name))
+            InType.SERVLET_CONTEXT_DATA -> result.add(req?.session?.servletContext?.getAttribute(it.name))
             InType.SESSION_DATA -> result.add(req?.session?.getAttribute(it.name))
             InType.REQUEST_DATA -> result.add(req?.getAttribute(it.name))
             InType.COOKIE_DATA ->  req?.cookies?.getAttribute(it.name)?.value
-            InType.OBJECT_FROM_FORM_DATA -> result.add(JSONUtil.toBean(req!!.parameterMap.toJson(), it.Type))
+            InType.OBJECT_FROM_FORM_DATA -> result.add(JSONUtil.toBean((req!!.parameterMap as Map<String,Array<String>>).toJson(), it.Type))
             InType.OBJECT_FROM_BODY -> result.add(JSONUtil.toBean(req?.getBody(), it.Type))
             InType.BASIC_FORM_DATA -> result.add(
                 req?.getParameterValues(it.name)?.let { stringArray -> stringArrayToBasicData(stringArray, it.Type) }
             )
-
             InType.HEAD -> result.add(stringToBasicData(req?.getHeader(it.name), it.Type))
             InType.PATH -> {
                 if (null == pathDataMap) getDataFromPath(it.apiPath)
@@ -72,21 +74,13 @@ private fun getParam(
 
             InType.MAP -> result.add(HashMap(req?.parameterMap))
 
-            InType.FILE -> { //TODO Part对象无法获取
-                try {
-                    result.add(req?.getPart(it.name))
-                } catch (e: java.lang.IllegalStateException) {
-                    result.add(null)
-                }
+            InType.FILE -> {
+                if(null == fileItemList) fileItemList = getFile(req!!)
+                result.add(fileItemList!!.find { file -> it.name == file.fieldName })
             }
-
-
-            InType.LIST_FILE -> { //TODO Part对象无法获取
-                try {
-                    result.add(req?.parts)
-                } catch (e: java.lang.IllegalStateException) {
-                    result.add(null)
-                }
+            InType.FILE_LIST ->{
+                if(null == fileItemList) fileItemList = getFile(req!!)
+                result.add(fileItemList)
             }
 
             InType.BEFORE_NODE_DATA -> result.add(beforeNodeData)

@@ -4,8 +4,9 @@ package patrick.servlet.plus.auto.init
  * 用于构建节点(Api, Filter, Init, Destroy)列表
  */
 
-import jakarta.servlet.ServletContext
-import jakarta.servlet.http.*
+import org.apache.commons.fileupload.FileItem
+import javax.servlet.ServletContext
+import javax.servlet.http.*
 import patrick.servlet.plus.annotation.Plus
 import patrick.servlet.plus.annotation.api.Api
 import patrick.servlet.plus.annotation.api.ForwardOrDirect
@@ -55,23 +56,23 @@ private fun putNodeHolderInstance(nodeHolder: Class<*>, plusClassMap: MutableMap
  *
  * @return 返回元组, 元组的first为param的InType, second为参数名称
  *
- * @throws ApiParamException param没有@CookieList或@PartList注解, 且List<T>的T类型不为Cookie或Part时抛出
- * @throws IllegalParamException param没有@CookieList或@PartList注解, 且无法检测泛型类型时抛出
+ * @throws ApiParamException param没有@CookieList或@FileList注解, 且List<T>的T类型不为Cookie或FileItem时抛出
+ * @throws IllegalParamException param没有@CookieList或@FileList注解, 且无法检测泛型类型时抛出
  */
 private fun getListParamTypeAndName(param: Parameter, method: Method): Pair<InType, String> {
 
     //先判断是否有注解
     if (null != param.getAnnotation(CookieList::class.java)) return Pair(InType.COOKIE_LIST, param.name)
-    if (null != param.getAnnotation(PartList::class.java)) return Pair(InType.LIST_FILE, param.name)
+    if (null != param.getAnnotation(FileList::class.java)) return Pair(InType.FILE_LIST, param.name)
 
     //获得参数类型
     val genericParameterTypes: Array<Type> = method.genericParameterTypes
     val index = method.parameters.indexOf(param)
     if (genericParameterTypes[index] is ParameterizedType) {
-        //获得泛型类型,并判断是不是Cookie或Part类型
+        //获得泛型类型,并判断是不是Cookie或FileItem类型
         return when ((genericParameterTypes[index] as ParameterizedType).actualTypeArguments[0].typeName) {
             Cookie::class.java.name -> Pair(InType.COOKIE_LIST, param.name)
-            Part::class.java.name -> Pair(InType.LIST_FILE, param.name)
+            FileItem::class.java.name -> Pair(InType.FILE_LIST, param.name)
             else -> throw ApiParamException.unknownApiParam(param)
         }
     }
@@ -171,11 +172,14 @@ private fun getParamTypeAndName(param: Parameter): Pair<InType, String> {
             val fileName = fromCookie.value
             Pair(InType.COOKIE, fileName.ifBlank { param.name })
         }
+
         Map::class.java -> Pair(InType.MAP, param.name)
-        Part::class.java -> {
-            val fromFile = param.getAnnotation(FromFile::class.java)
-            val fileName = fromFile.value
-            Pair(InType.FILE, fileName.ifBlank { param.name })
+        FileItem::class.java -> {
+            val fileAnnotation = param.getAnnotation(File::class.java)
+            if (null == fileAnnotation) Pair(InType.FILE, param.name) else {
+                val fileName = fileAnnotation.value
+                Pair(InType.FILE, fileName.ifBlank { param.name })
+            }
         }
 
         //基本数据类型及其包装类和String
@@ -240,6 +244,10 @@ private fun apiAndFilterHandler(nodeHolder: Any, apiList: ApiList, filterList: F
     val topApi = nodeHolder::class.java.getAnnotation(Api::class.java)
     if (null != topApi) topPath = topApi.value
 
+    //检查是否全部Api为转发或重定向
+    val forwardOrDirectApi = nodeHolder::class.java.getAnnotation(ForwardOrDirect::class.java)
+    val isForwardOrDirectApi = null != forwardOrDirectApi
+
     //扫描方法
     for (method in nodeHolder::class.java.methods) {
         val apiAnnotation = getApiAnnotation(method)
@@ -258,7 +266,10 @@ private fun apiAndFilterHandler(nodeHolder: Any, apiList: ApiList, filterList: F
                     apiAnnotation.httpMethods,
                     method,
                     nodeHolder,
-                    if (isForwardOrDirect) ReturnType.FORWARD_OR_DIRECT else (if (Void.TYPE == method.returnType) ReturnType.NO_RETURN else ReturnType.BODY)
+                    if (isForwardOrDirectApi) ReturnType.FORWARD_OR_DIRECT else
+                        (if (isForwardOrDirect) ReturnType.FORWARD_OR_DIRECT else
+                                (if (Void.TYPE == method.returnType) ReturnType.NO_RETURN else
+                                    ReturnType.BODY))
                 )
             )
         }

@@ -25,7 +25,7 @@ enum class InType {
     MAP, //所有form-data数据
     FILE, //Part文件
 
-    LIST_FILE, //Part文件列表
+    FILE_LIST, //Part文件列表
 
     BEFORE_NODE_DATA //任意类型数据, 数据来自上一个节点
 }

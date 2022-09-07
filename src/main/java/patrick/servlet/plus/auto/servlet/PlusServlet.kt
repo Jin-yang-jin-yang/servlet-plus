@@ -1,10 +1,11 @@
 package patrick.servlet.plus.auto.servlet
 
-import jakarta.servlet.http.HttpServlet
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
+import javax.servlet.http.HttpServlet
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import patrick.servlet.plus.auto.config.ServletConfig
 import patrick.servlet.plus.auto.config.ServletConfig.prefix
 import patrick.servlet.plus.auto.node.NodeManager
 import patrick.servlet.plus.auto.init.initNode
@@ -26,6 +27,7 @@ import java.util.*
 /**
  * servlet代理类
  */
+
 class PlusServlet : HttpServlet() {
 
     private val log: Logger = LoggerFactory.getLogger(PlusServlet::class.java)
@@ -41,17 +43,11 @@ class PlusServlet : HttpServlet() {
     override fun init() {
         log.info("plus servlet 开始初始化")
 
-        prefix = getInitParameter("prefix") ?: ""
-        log.info("代理请求的前缀为$prefix")
-
-        suffix = getInitParameter("suffix") ?: ""
-        log.info("代理请求的后缀为$suffix")
-
-        log.info("开始进行包扫描")
-        val plusPackage = getInitParameter("plusPackage")
-        if (plusPackage.isNullOrBlank()) throw IllegalParamException.PLUS_PACKAGE_IS_NULL
+        ServletConfig.initConfig(servletConfig)
+        log.info("开始初始化配置")
 
         log.info("开始生成节点")
+        val plusPackage = ServletConfig.plusPackage
         nodeManager = initNode(plusPackage)
 
         log.info("开始生成过滤链")
@@ -81,8 +77,8 @@ class PlusServlet : HttpServlet() {
 
         val url = req!!.requestURI.replace(prefix,"").replaceLast(suffix, "")
         //缓存发生异常地执行链, 方便下次快速响应
-        if (errorPathMap.contains(url)) {
-            resp?.writer?.print(errorPathMap[url])
+        if (errorPathMap.contains(httpMethod.name + url)) {
+            resp?.writer?.print(errorPathMap[httpMethod.name + url])
             return
         }
 
@@ -91,28 +87,28 @@ class PlusServlet : HttpServlet() {
         } catch (pathException: ApiMatchException) {
             val msgPage = when (pathException.code) {
                 500 -> {
-                    resp?.status = 500
+                    resp?.setStatus(500)
                     getPage500(Arrays.toString(pathException.stackTrace))
                 }
 
                 404 -> {
-                    resp?.status = 404
+                    resp?.setStatus(404)
                     getPage404()
                 }
 
                 405 -> {
-                    resp?.status = 500
+                    resp?.setStatus(500)
                     getPage405()
                 }
 
                 else -> getPageXXX()
             }
-            errorPathMap[url] = msgPage
+            errorPathMap[httpMethod.name + url] = msgPage
             resp?.writer?.print(msgPage)
         } catch (error: Throwable) {
-            resp?.status = 500
+            resp?.setStatus(500)
             val msgPage = getPage500(Arrays.toString(error.stackTrace))
-            errorPathMap[url] = msgPage
+            errorPathMap[httpMethod.name + url] = msgPage
             resp?.writer?.print(msgPage)
         }
     }
